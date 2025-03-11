@@ -1,13 +1,18 @@
 name: Deploy
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
 jobs:
   # test:
   #   ...
   deploy:
     name: "Deploy to staging"
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    # needs: test
+    
     steps:
       - name: Configure SSH
         run: |
@@ -26,14 +31,5 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
-      #- name: Stop the server
-      #  run: ssh staging 'sudo systemctl stop my-application'
-
-      #- name: Check out the source
-      #  run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
       - name: Check out the source
         run: ssh staging 'deploy.sh'
-
-      #- name: Start the server
-      #  if: ${{ always() }}
-      #  run: ssh staging 'sudo systemctl start my-application'
